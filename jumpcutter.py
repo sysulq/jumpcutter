@@ -205,8 +205,9 @@ outputAudioData = np.zeros((0, audioData.shape[1]))
 outputPointer = 0
 
 cap = cv2.VideoCapture(INPUT_FILE)
-FPS, w, h = cap.get(cv2.CAP_PROP_FPS), cap.get(
-    cv2.CAP_PROP_FRAME_WIDTH), cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+FPS, framecount, w, h = cap.get(cv2.CAP_PROP_FPS), cap.get(
+    cv2.CAP_PROP_FRAME_COUNT), cap.get(cv2.CAP_PROP_FRAME_WIDTH), cap.get(
+        cv2.CAP_PROP_FRAME_HEIGHT)
 size = (int(w), int(h))
 fourcc = cv2.VideoWriter_fourcc(*'avc1')
 cvwriter = cv2.VideoWriter(TEMP_FOLDER + "/alter001.mov", fourcc, int(FPS),
@@ -261,7 +262,7 @@ for chunk in chunks:
     #         copyFrame(lastExistingFrame,outputFrame)
 
     while (True):
-        ret, frame = cap.read()
+        ret = cap.grab()
         if ret:
             count += 1
 
@@ -270,7 +271,11 @@ for chunk in chunks:
             if count % NEW_SPEED[int(chunk[2])] == 0:
                 print("截取第", str(count), "帧", startOutputFrame, endOutputFrame,
                       NEW_SPEED[int(chunk[2])])
+                _, frame = cap.retrieve()
                 cvwriter.write(frame)
+                if count+NEW_SPEED[int(chunk[2])]>=framecount:
+                    print("最后一帧", count)
+                    cvwriter.write(frame)
             c = cv2.waitKey(1)
             if c == 27:
                 break
