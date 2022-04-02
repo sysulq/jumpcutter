@@ -1,5 +1,3 @@
-from contextlib import closing
-from PIL import Image
 import subprocess
 from audiotsm import phasevocoder
 from audiotsm.io.wav import WavReader, WavWriter
