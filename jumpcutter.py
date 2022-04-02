@@ -273,9 +273,6 @@ for chunk in chunks:
                       NEW_SPEED[int(chunk[2])])
                 _, frame = cap.retrieve()
                 cvwriter.write(frame)
-                if count+NEW_SPEED[int(chunk[2])]>=framecount:
-                    print("最后一帧", count)
-                    cvwriter.write(frame)
             c = cv2.waitKey(1)
             if c == 27:
                 break
