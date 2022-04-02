@@ -251,26 +251,14 @@ for chunk in chunks:
         outputAudioData[endPointer -
                         AUDIO_FADE_ENVELOPE_SIZE:endPointer] *= 1 - mask
 
-    startOutputFrame = int(math.ceil(outputPointer / samplesPerFrame))
-    endOutputFrame = int(math.ceil(endPointer / samplesPerFrame))
-    # for outputFrame in range(startOutputFrame, endOutputFrame):
-    #     inputFrame = int(chunk[0]+NEW_SPEED[int(chunk[2])]*(outputFrame-startOutputFrame))
-    #     didItWork = copyFrame(inputFrame,outputFrame)
-    #     if didItWork:
-    #         lastExistingFrame = inputFrame
-    #     else:
-    #         copyFrame(lastExistingFrame,outputFrame)
-
     while (True):
         ret = cap.grab()
         if ret:
             count += 1
-
             if count < chunk[0] or count > chunk[1]:
                 break
             if count % NEW_SPEED[int(chunk[2])] == 0:
-                print("截取第", str(count), "帧", startOutputFrame, endOutputFrame,
-                      NEW_SPEED[int(chunk[2])])
+                print("截取第", str(count), "帧, 速度 ", NEW_SPEED[int(chunk[2])])
                 _, frame = cap.retrieve()
                 cvwriter.write(frame)
             c = cv2.waitKey(1)
