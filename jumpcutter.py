@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess
 from audiotsm import phasevocoder
 from audiotsm.io.wav import WavReader, WavWriter
