@@ -134,6 +134,7 @@ else:
 TEMP_FOLDER = "TEMP"
 AUDIO_FADE_ENVELOPE_SIZE = 400  # smooth out transitiion's audio by quickly fading in/out (arbitrary magic number whatever)
 
+deletePath(TEMP_FOLDER)
 createPath(TEMP_FOLDER)
 
 # command = "ffmpeg -i "+INPUT_FILE+" -qscale:v "+str(FRAME_QUALITY)+" "+TEMP_FOLDER+"/frame%06d.jpg -hide_banner"
@@ -144,7 +145,7 @@ command = "ffmpeg -i '" + INPUT_FILE + "' -ab 160k -ac 2 -ar " + str(
 
 subprocess.call(command, shell=True)
 
-command = "ffmpeg -i " + TEMP_FOLDER + "/input.mp4 2>&1"
+command = "ffmpeg -i '" + INPUT_FILE + "' 2>&1"
 f = open(TEMP_FOLDER + "/params.txt", "w")
 subprocess.call(command, shell=True, stdout=f)
 
@@ -157,9 +158,10 @@ pre_params = f.read()
 f.close()
 params = pre_params.split('\n')
 for line in params:
-    m = re.search('Stream #.*Video.* ([0-9]*) fps', line)
+    # Stream #0:1[0x2](und): Video: h264 (High) (avc1 / 0x31637661), yuvj420p(pc, bt709/bt709/iec61966-2-1, progressive), 1440x1920, 1624 kb/s, 10.43 fps, 60 tbr, 600 tbn (default)
+    m = re.search('Stream #.*Video.* ([0-9.]*) fps', line)
     if m is not None:
-        frameRate = float(m.group(1))
+        frameRate = math.ceil(float(m.group(1)))
 
 samplesPerFrame = sampleRate / frameRate
 
@@ -200,6 +202,7 @@ fourcc = cv2.VideoWriter_fourcc(*'avc1')
 cvwriter = cv2.VideoWriter(TEMP_FOLDER + "/alter001.mov", fourcc, int(FPS),
                            size)
 count = 0
+print(framecount, FPS)
 
 lastExistingFrame = None
 for chunk in chunks:
@@ -240,8 +243,8 @@ for chunk in chunks:
 
     while (True):
         ret = cap.grab()
+        count += 1
         if ret:
-            count += 1
             if count < chunk[0] or count > chunk[1]:
                 break
             if count % NEW_SPEED[int(chunk[2])] == 0:
@@ -252,8 +255,9 @@ for chunk in chunks:
             if c == 27:
                 break
         else:
-            print("处理完毕")
-            break
+            if count > framecount:
+                print("处理完毕")
+                break
     outputPointer = endPointer
 
 # After the loop release the cap object
@@ -269,7 +273,7 @@ for endGap in range(outputFrame,audioFrameCount):
     copyFrame(int(audioSampleCount/samplesPerFrame)-1,endGap)
 '''
 
-command = "ffmpeg -i " + TEMP_FOLDER + "/alter001.mov -i " + TEMP_FOLDER + "/audioNew.wav -c:v copy -c:a aac -strict -2 '" + OUTPUT_FILE + "'"
+command = "ffmpeg -i " + TEMP_FOLDER + "/alter001.mov -i " + TEMP_FOLDER + "/audioNew.wav -c:v copy -c:a aac -strict -2 -y '" + OUTPUT_FILE + "'"
 subprocess.call(command, shell=True)
 
 deletePath(TEMP_FOLDER)
