@@ -19,12 +19,14 @@ pip3 install -r requirementes.txt
 Run
 ---
 
+```
 ./jumpcutter.py --input_file INPUT_FILE
+```
 
 Help
 ---
 
-```bash
+```txt
 ./jumpcutter.py -h
 usage: jumpcutter.py [-h] [--input_file INPUT_FILE] [--url URL] [--output_file OUTPUT_FILE]
                      [--silent_threshold SILENT_THRESHOLD] [--sounded_speed SOUNDED_SPEED]
