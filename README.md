@@ -1,7 +1,7 @@
 jumpcutter
 ===
 
-Inspired by [jumpcutter](https://github.com/carykh/jumpcutter)
+A tool for automatically editing videos, which is inspired by [jumpcutter](https://github.com/carykh/jumpcutter).
 
 Requirements
 ---
